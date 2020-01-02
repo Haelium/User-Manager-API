@@ -30,7 +30,7 @@ func Test_GetUser(t *testing.T) {
 		miniredis_socket.HSet("users", key, val)
 	}
 	// Start client
-	redis_client, _ := NewRedisHashConn(miniredis_socket.Addr(), "", 0)
+	redis_client, _ := NewRedisHashConn(miniredis_socket.Addr(), "", 0, 5, 32)
 
 	for key, expected_val := range valid_users {
 		actual_val, err := redis_client.GetUser(key)
@@ -53,7 +53,7 @@ func Test_CreateUser(t *testing.T) {
 	}
 	defer miniredis_socket.Close()
 
-	redis_client, _ := NewRedisHashConn(miniredis_socket.Addr(), "", 0)
+	redis_client, _ := NewRedisHashConn(miniredis_socket.Addr(), "", 0, 5, 32)
 
 	for username, userdata := range valid_users {
 		redis_client.CreateUser(username, userdata)
