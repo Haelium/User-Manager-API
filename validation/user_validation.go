@@ -37,7 +37,17 @@ func validateUsername(input string) error {
 }
 
 func validateAddress(input address) error {
-	return nil
+	if input.Name == "" {
+		return errors.New("Address Name is a required field")
+	} else if input.Line1 == "" {
+		return errors.New("Address Line1 is a required field")
+	} else if input.Region == "" {
+		return errors.New("Address Region is a required field")
+	} else if input.Country == "" {
+		return errors.New("Address Country is a required field")
+	} else {
+		return nil
+	}
 }
 
 func ValidateUser(input string) (string, error) {

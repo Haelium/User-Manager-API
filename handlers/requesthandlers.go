@@ -38,8 +38,6 @@ PUT /user/{username}				- Updates user				- Takes json struct
 
 */
 
-// Validateinput: is-json
-
 type DatabaseInterface interface {
 	CreateUser(string, string) error
 	// EditUser

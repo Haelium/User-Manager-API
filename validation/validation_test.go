@@ -76,3 +76,63 @@ func Test_ValidateUser_UserMissingField(t *testing.T) {
 	}
 
 }
+
+func Test_validateAddress(t *testing.T) {
+	valid_addresses := []address{
+		address{
+			Name:     "Mr One",
+			Line1:    "22 Woodroad",
+			Line2:    "Ballyville",
+			Region:   "Cork",
+			Postcode: "11111",
+			Country:  "Ireland",
+		},
+		address{
+			Name:    "Mr Two",
+			Line1:   "16 Fallsroad",
+			Line2:   "Derry",
+			Region:  "Belfast",
+			Country: "Northern Ireland",
+		},
+		address{
+			Name:    "The Occupant",
+			Line1:   "22 Slumville",
+			Region:  "Limerick",
+			Country: "Something",
+		},
+		address{
+			Name:     "Lord O'Fancy",
+			Line1:    "Fancyland Manor",
+			Line2:    "Use all lines",
+			Line3:    "allfields",
+			Region:   "Someregion",
+			Postcode: "12123123",
+			Country:  "Wakanda",
+		},
+		address{
+			Name:    "名称",
+			Line1:   "Somewhere",
+			Region:  "عنوان",
+			Country: "薛대한민국",
+		},
+	}
+
+	for _, address := range valid_addresses {
+		err := validateAddress(address)
+		if err != nil {
+			t.Logf("Expected nil, got: %s", err)
+		}
+	}
+
+	missing_name := address{
+		Line1:   "44 address blah blah",
+		Region:  "Dublin 15",
+		Country: "Ireland",
+	}
+	expected_err := errors.New("Address Name is a required field")
+	err := validateAddress(missing_name)
+	if err != expected_err {
+		t.Logf("Expected: %s\nGot: %s\n", expected_err, err)
+	}
+
+}
