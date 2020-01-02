@@ -19,6 +19,10 @@ func main() {
 	redisPassPtr := flag.String("redis_password", "", "Redis server password")
 	redisDBIndexPtr := flag.Int("redis_db_index", 0, "Redis database index")
 
+	appListenPortPtr := flag.String("listen_port", "8080", "Port which service listens on")
+	// appLogLevel?
+	// appLogFilePath?
+
 	user_db, err := redisutil.NewRedisHashConn((*redisAddrPtr)+":"+(*redisPortPtr), *redisPassPtr, *redisDBIndexPtr)
 	if err != nil {
 		log.Panicf("Exit: %s", err)
@@ -33,5 +37,5 @@ func main() {
 	router.HandleFunc("/user/{username}", handler.DeleteUser).Methods(http.MethodDelete)
 	//	router.PathPrefix("/").Handler(catchAllHandler)
 
-	log.Fatal(http.ListenAndServe(":8080", router))
+	log.Fatal(http.ListenAndServe(":"+(*appListenPortPtr), router))
 }
