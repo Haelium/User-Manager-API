@@ -21,12 +21,11 @@ func main() {
 	redisMaxRetries := flag.Int("redis_max_retries", 5, "Number of times redis will retry a command")
 
 	appListenPortPtr := flag.String("listen_port", "8080", "Port which service listens on")
-	// appLogLevel?
-	// appLogFilePath?
+	appDataTTLSeconds := flag.Int("data_ttl", 60, "time before data expires")
 
 	flag.Parse()
 
-	user_db, err := redisutil.NewRedisHashConn((*redisAddrPtr)+":"+(*redisPortPtr), *redisPassPtr, *redisDBIndexPtr, *redisMaxRetries)
+	user_db, err := redisutil.NewRedisHashConn((*redisAddrPtr)+":"+(*redisPortPtr), *redisPassPtr, *redisDBIndexPtr, *redisMaxRetries, *appDataTTLSeconds)
 	if err != nil {
 		log.Panicf("Exit: %s", err)
 	}
