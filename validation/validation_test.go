@@ -50,7 +50,7 @@ func Test_ValidateUser_UserMissingField(t *testing.T) {
 		t.Logf("Return value should be empty string, Got: %s\n", returnval)
 	}
 
-	// Missing fullname
+	// Missing username
 	user_missing_username := `{"fullname": "billy bobson", "email": "Bob@bobmail.bob", "address": {"name": "Bob", "Line 1": "44 Bobstreet", "region": "Bobville", "country": "Bobland"}}`
 
 	expected_err = errors.New("Username is a required field")
@@ -76,6 +76,25 @@ func Test_ValidateUser_UserMissingField(t *testing.T) {
 		t.Logf("Return value should be empty string, Got: %s\n", returnval)
 	}
 
+}
+
+func Test_ValidateUser_ReturnsLowercaseUsername(t *testing.T) {
+	valid_users := []string{
+		`{"username": "bIlLy2000", "fullname": "Billy Billy", "email": "Bob@bobmail.bob", "address": {"name": "Bob", "Line 1": "44 Bobstreet", "region": "Bobville", "country": "Bobland"}}`,
+		`{"username": "BIlLy2000", "fullname": "Billy Billy", "email": "Bob@bobmail.bob", "address": {"name": "Bob", "Line 1": "44 Bobstreet", "region": "Bobville", "country": "Bobland"}}`,
+		`{"username": "BILLY2000", "fullname": "Billy Billy", "email": "Bob@bobmail.bob", "address": {"name": "Bob", "Line 1": "44 Bobstreet", "region": "Bobville", "country": "Bobland"}}`,
+		`{"username": "bILLy2000", "fullname": "Billy Billy", "email": "Bob@bobmail.bob", "address": {"name": "Bob", "Line 1": "44 Bobstreet", "region": "Bobville", "country": "Bobland"}}`,
+	}
+
+	for _, valid_user := range valid_users {
+		returned_username, err := ValidateUser(valid_user)
+		if returned_username != "billy2000" {
+			t.Logf("Failed to return lowercase username: %s\n", returned_username)
+		}
+		if err != nil {
+			t.Logf("Error %s, returned for valid user:\n%s\n", err, valid_user)
+		}
+	}
 }
 
 func Test_validateAddress(t *testing.T) {
