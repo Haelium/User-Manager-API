@@ -23,6 +23,8 @@ func main() {
 	// appLogLevel?
 	// appLogFilePath?
 
+	flag.Parse()
+
 	user_db, err := redisutil.NewRedisHashConn((*redisAddrPtr)+":"+(*redisPortPtr), *redisPassPtr, *redisDBIndexPtr)
 	if err != nil {
 		log.Panicf("Exit: %s", err)
