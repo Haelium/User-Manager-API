@@ -18,14 +18,18 @@ func main() {
 	redisPortPtr := flag.String("redis_port", "6379", "Redis server port")
 	redisPassPtr := flag.String("redis_password", "", "Redis server password")
 	redisDBIndexPtr := flag.Int("redis_db_index", 0, "Redis database index")
+	redisMaxRetries := flag.Int("redis_max_retries", 5, "Number of times redis will retry a command")
 
 	appListenPortPtr := flag.String("listen_port", "8080", "Port which service listens on")
 	// appLogLevel?
 	// appLogFilePath?
 
+	// Redis TTL?
+	// Redis timeout threshold
+
 	flag.Parse()
 
-	user_db, err := redisutil.NewRedisHashConn((*redisAddrPtr)+":"+(*redisPortPtr), *redisPassPtr, *redisDBIndexPtr)
+	user_db, err := redisutil.NewRedisHashConn((*redisAddrPtr)+":"+(*redisPortPtr), *redisPassPtr, *redisDBIndexPtr, *redisMaxRetries)
 	if err != nil {
 		log.Panicf("Exit: %s", err)
 	}

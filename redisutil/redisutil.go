@@ -9,18 +9,21 @@ type RedisHashConn struct {
 }
 
 // TODO: return err
-func NewRedisHashConn(address string, password string, database int) (RedisHashConn, error) {
+func NewRedisHashConn(address string, password string, database int, maxretries int) (RedisHashConn, error) {
 	var new_redis_conn RedisHashConn
 
 	new_client := redis.NewClient(&redis.Options{
-		Addr:     address,
-		Password: password,
-		DB:       database,
+		Addr:            address,
+		Password:        password,
+		DB:              database,
+		MaxRetries:      maxretries,
+		MinRetryBackoff: 500,
+		MaxRetryBackoff: 1000,
 	})
 
 	new_redis_conn.client = new_client
 
-	_, err := new_client.Ping().Result()
+	err := new_client.Ping().Err()
 	if err != nil {
 		return new_redis_conn, err
 	}
