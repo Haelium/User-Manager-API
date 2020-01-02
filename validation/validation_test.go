@@ -81,9 +81,9 @@ func Test_ValidateUser_UserMissingField(t *testing.T) {
 func Test_ValidateUser_ReturnsLowercaseUsername(t *testing.T) {
 	valid_users := []string{
 		`{"username": "bIlLy2000", "fullname": "Billy Billy", "email": "Bob@bobmail.bob", "address": {"name": "Bob", "Line 1": "44 Bobstreet", "region": "Bobville", "country": "Bobland"}}`,
-		`{"username": "BIlLy2000", "fullname": "Billy Billy", "email": "Bob@bobmail.bob", "address": {"name": "Bob", "Line 1": "44 Bobstreet", "region": "Bobville", "country": "Bobland"}}`,
-		`{"username": "BILLY2000", "fullname": "Billy Billy", "email": "Bob@bobmail.bob", "address": {"name": "Bob", "Line 1": "44 Bobstreet", "region": "Bobville", "country": "Bobland"}}`,
-		`{"username": "bILLy2000", "fullname": "Billy Billy", "email": "Bob@bobmail.bob", "address": {"name": "Bob", "Line 1": "44 Bobstreet", "region": "Bobville", "country": "Bobland"}}`,
+		`{"username": "BIlLy2000", "fullname": "Billy Billy", "email": "Bob@hotmail.com", "address": {"name": "Bob", "Line 1": "44 Bobstreet", "region": "Bobville", "country": "Bobland"}}`,
+		`{"username": "BILLY2000", "fullname": "Billy Billy", "email": "Bob@gmail.nl", "address": {"name": "Null", "Line 1": "44 Edgevoid", "region": "Bobville", "country": "Bobland"}}`,
+		`{"username": "bILLy2000", "fullname": "Billy Billy", "email": "Bob@edgcase.ie", "address": {"name": "Freddy", "Line 1": "Null", "region": "Bobville", "country": "Bobland"}}`,
 	}
 
 	for _, valid_user := range valid_users {
