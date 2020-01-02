@@ -24,9 +24,6 @@ func main() {
 	// appLogLevel?
 	// appLogFilePath?
 
-	// Redis TTL?
-	// Redis timeout threshold
-
 	flag.Parse()
 
 	user_db, err := redisutil.NewRedisHashConn((*redisAddrPtr)+":"+(*redisPortPtr), *redisPassPtr, *redisDBIndexPtr, *redisMaxRetries)
