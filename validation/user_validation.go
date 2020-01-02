@@ -3,6 +3,8 @@ package validation
 import (
 	"encoding/json"
 	"errors"
+	"regexp"
+	"strings"
 )
 
 type address struct {
@@ -30,7 +32,7 @@ func validateEmail(input string) error {
 }
 
 func validateFullname(input string) error {
-	// Singile unicode character names exist, assuming 2 names seperated by space, 3 character is minimum
+	// Single unicode character names exist, assuming 2 names seperated by space, 3 character is minimum
 	if len(input) < 3 {
 		return errors.New("Fullname is less than 3 characters")
 	} else if len(input) > 128 {
@@ -41,6 +43,23 @@ func validateFullname(input string) error {
 }
 
 func validateUsername(input string) error {
+	// Only accepting 8-64 alphanumeric characters. First character must be alphabetic
+	if len(input) < 8 {
+		return errors.New("Username is less than 8 characters")
+	}
+
+	if len(input) > 64 {
+		return errors.New("Username is greater than 64 characters")
+	}
+
+	if input[0] < 'A' || input[0] > 'z' {
+		return errors.New("Username does not begin with a roman alphabetic character")
+	}
+
+	if !isAlphaNumeric.MatchString(input) {
+		return errors.New("Username is not alphanumeric")
+	}
+
 	return nil
 }
 
@@ -87,5 +106,12 @@ func ValidateUser(input string) (string, error) {
 		return "", err
 	}
 
-	return newuser.Username, nil
+	// Convert all new usernames to lowercase, as their input should be case insensitive
+	return strings.ToLower(newuser.Username), nil
+}
+
+var isAlphaNumeric regexp.Regexp
+
+func init() {
+	isAlphaNumeric = *regexp.MustCompile(`^[A-Za-z0-9]+$`)
 }

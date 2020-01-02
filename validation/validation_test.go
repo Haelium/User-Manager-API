@@ -156,3 +156,42 @@ func Test_validateFullname(t *testing.T) {
 		t.Logf("Expected: %s\nGot: %s\n", expected_err, err)
 	}
 }
+
+func Test_validateUsername(t *testing.T) {
+	expected_err := errors.New("Username does not begin with a roman alphabetic character")
+	first_char_non_alpha := []string{"1abcdefghijk", "0asdasdadad", "9asdadasaffafa"}
+	for _, val := range first_char_non_alpha {
+		err := validateUsername(val)
+		if err != expected_err {
+			t.Logf("Expected: %s\nGot: %s\n", expected_err, err)
+		}
+	}
+
+	expected_err = errors.New("Username is not alphanumeric")
+	non_alphanumeric := []string{
+		"asdasdaasd@@", "sadad...adsads", "asdada////", "sadad'adsaad", "ewaew]asdada", "lllll[sadada", "asaæææææassas",
+		"aϨϨϨϨϨasdaasd", "asdad日本語sdada", "asda⌘⌘⌘sadsa", "aaaa嗨嗨嗨嗨嗨", "sdadCześć", "AAAAAAaść",
+	}
+	for _, val := range non_alphanumeric {
+		err := validateUsername(val)
+		if err != expected_err {
+			t.Logf("Failed for %s\nExpected: %s\nGot: %s\n", val, expected_err, err)
+		}
+	}
+
+	expected_err = errors.New("Username is less than 8 characters")
+	too_short := []string{"", "a", "aa", "aaa", "aaaa", "aaaaa", "aaaaaa", "aaaaaaa"}
+	for _, val := range too_short {
+		err := validateUsername(val)
+		if err != expected_err {
+			t.Logf("Failed for %s\nExpected: %s\nGot: %s\n", val, expected_err, err)
+		}
+	}
+
+	expected_err = errors.New("Username is greater than 64 characters")
+	name_too_long := strings.Repeat("a", 65)
+	err := validateUsername(name_too_long)
+	if err != expected_err {
+		t.Logf("Expected: %s\nGot: %s\n", expected_err, err)
+	}
+}
