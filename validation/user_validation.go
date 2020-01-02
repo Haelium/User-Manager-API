@@ -25,10 +25,18 @@ type user struct {
 // email_regexp
 
 func validateEmail(input string) error {
+
 	return nil
 }
 
 func validateFullname(input string) error {
+	// Singile unicode character names exist, assuming 2 names seperated by space, 3 character is minimum
+	if len(input) < 3 {
+		return errors.New("Fullname is less than 3 characters")
+	} else if len(input) > 128 {
+		return errors.New("Fullname is greater than 128 characters")
+	}
+
 	return nil
 }
 

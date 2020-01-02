@@ -2,6 +2,7 @@ package validation
 
 import (
 	"errors"
+	"strings"
 	"testing"
 )
 
@@ -135,4 +136,23 @@ func Test_validateAddress(t *testing.T) {
 		t.Logf("Expected: %s\nGot: %s\n", expected_err, err)
 	}
 
+}
+
+func Test_validateFullname(t *testing.T) {
+	expected_err := errors.New("Fullname is less than 3 characters")
+	names_too_short := []string{"", "a", "bb"}
+
+	for _, name := range names_too_short {
+		err := validateFullname(name)
+		if err != expected_err {
+			t.Logf("Expected: %s\nGot: %s\n", expected_err, err)
+		}
+	}
+
+	expected_err = errors.New("Fullname is greater than 128 characters")
+	name_too_long := strings.Repeat("#", 129)
+	err := validateFullname(name_too_long)
+	if err != expected_err {
+		t.Logf("Expected: %s\nGot: %s\n", expected_err, err)
+	}
 }
