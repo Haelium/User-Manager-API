@@ -221,3 +221,31 @@ func Test_validateUsername(t *testing.T) {
 		}
 	}
 }
+
+func Test_validateEmail(t *testing.T) {
+	expected_err := errors.New("Invalid email format")
+	invalid_emails := []string{"&&&&adad@gmail.com", "@@@", "ayyyy", "", "()()", "^^david@broseph.com", "%%ttt@gmail.com", "%%@gmsssss.com", "word@land"}
+
+	for _, invalid_email := range invalid_emails {
+		err := validateEmail(invalid_email)
+
+		if err != expected_err {
+			t.Logf("Failed input: %s\n Expected: %s\nGot %s\n", invalid_email, expected_err, err)
+		}
+	}
+
+	expected_err = errors.New("Invalid email host")
+	domain_that_does_not_exist := "dogbert@definitelynottakenihopeuuuuuu.com"
+	err := validateEmail(domain_that_does_not_exist)
+	if err != expected_err {
+		t.Logf("Expected %s\nGot %s\n", expected_err, err)
+	}
+
+	should_pass := []string{"username@gmail.com", "username@hotmail.com", "username@protonmail.com", "username@protonmail.ch"}
+	for _, email := range should_pass {
+		err = validateEmail(email)
+		if err != nil {
+			t.Logf("Case %s failed to validate", email)
+		}
+	}
+}

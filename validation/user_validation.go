@@ -5,6 +5,8 @@ import (
 	"errors"
 	"regexp"
 	"strings"
+
+	"github.com/badoux/checkmail"
 )
 
 type address struct {
@@ -24,9 +26,17 @@ type user struct {
 	Address  address `json:"address"`
 }
 
-// email_regexp
-
+// Email validation does not allow internationalised email domains
 func validateEmail(input string) error {
+	if err := checkmail.ValidateFormat(input); err != nil {
+		return errors.New("Invalid email format")
+	}
+
+	// This check means that unit testing requires access to public internet and takes some time
+	// Possibly best to remove if becomes an issue
+	if err := checkmail.ValidateHost(input); err != nil {
+		return errors.New("Invalid email host")
+	}
 
 	return nil
 }
