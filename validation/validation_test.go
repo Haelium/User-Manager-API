@@ -194,4 +194,11 @@ func Test_validateUsername(t *testing.T) {
 	if err != expected_err {
 		t.Logf("Expected: %s\nGot: %s\n", expected_err, err)
 	}
+
+	valid_usernames := []string{"bobman2000", "BOBman9000", "llll22222", "L33tBoaaa", "Joseph1111", "l34444444", "adadasdadadadasasfasfasff"}
+	for _, val := range valid_usernames {
+		if err := validateUsername(val); err != nil {
+			t.Logf("Expected: nil\nGot: %s\n", err)
+		}
+	}
 }
