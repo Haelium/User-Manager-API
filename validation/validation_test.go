@@ -1,7 +1,6 @@
 package validation
 
 import (
-	"errors"
 	"strings"
 	"testing"
 )
@@ -40,40 +39,46 @@ func Test_ValidateUser_UserMissingField(t *testing.T) {
 	// Missing fullname
 	user_missing_fullname := `{"username": "billy", "email": "Bob@bobmail.bob", "address": {"name": "Bob", "Line 1": "44 Bobstreet", "region": "Bobville", "country": "Bobland"}}`
 
-	expected_err := errors.New("Fullname is a required field")
+	expected_err := "Fullname is a required field"
 	returnval, actual_err := ValidateUser(user_missing_fullname)
 
-	if actual_err != expected_err {
+	if actual_err.Error() != expected_err {
 		t.Logf("Expected: %s\n Got: %s\n", expected_err, actual_err)
+		t.Fail()
 	}
 	if returnval != "" {
 		t.Logf("Return value should be empty string, Got: %s\n", returnval)
+		t.Fail()
 	}
 
 	// Missing username
 	user_missing_username := `{"fullname": "billy bobson", "email": "Bob@bobmail.bob", "address": {"name": "Bob", "Line 1": "44 Bobstreet", "region": "Bobville", "country": "Bobland"}}`
 
-	expected_err = errors.New("Username is a required field")
+	expected_err = "Username is a required field"
 	returnval, actual_err = ValidateUser(user_missing_username)
 
-	if actual_err != expected_err {
+	if actual_err.Error() != expected_err {
 		t.Logf("Expected: %s\n Got: %s\n", expected_err, actual_err)
+		t.Fail()
 	}
 	if returnval != "" {
 		t.Logf("Return value should be empty string, Got: %s\n", returnval)
+		t.Fail()
 	}
 
 	// Missing email
 	user_missing_email := `{"fullname": "billy bobson", "username": "bobman2000", "address": {"name": "Bob", "Line 1": "44 Bobstreet", "region": "Bobville", "country": "Bobland"}}`
 
-	expected_err = errors.New("Email is a required field")
+	expected_err = "Email is a required field"
 	returnval, actual_err = ValidateUser(user_missing_email)
 
-	if actual_err != expected_err {
+	if actual_err.Error() != expected_err {
 		t.Logf("Expected: %s\n Got: %s\n", expected_err, actual_err)
+		t.Fail()
 	}
 	if returnval != "" {
 		t.Logf("Return value should be empty string, Got: %s\n", returnval)
+		t.Fail()
 	}
 
 }
@@ -90,9 +95,11 @@ func Test_ValidateUser_ReturnsLowercaseUsername(t *testing.T) {
 		returned_username, err := ValidateUser(valid_user)
 		if returned_username != "billy2000" {
 			t.Logf("Failed to return lowercase username: %s\n", returned_username)
+			t.Fail()
 		}
 		if err != nil {
 			t.Logf("Error %s, returned for valid user:\n%s\n", err, valid_user)
+			t.Fail()
 		}
 	}
 }
@@ -141,6 +148,7 @@ func Test_validateAddress(t *testing.T) {
 		err := validateAddress(address)
 		if err != nil {
 			t.Logf("Expected nil, got: %s", err)
+			t.Fail()
 		}
 	}
 
@@ -149,103 +157,106 @@ func Test_validateAddress(t *testing.T) {
 		Region:  "Dublin 15",
 		Country: "Ireland",
 	}
-	expected_err := errors.New("Address Name is a required field")
+	expected_err := "Address Name is a required field"
 	err := validateAddress(missing_name)
-	if err != expected_err {
+	if err.Error() != expected_err {
 		t.Logf("Expected: %s\nGot: %s\n", expected_err, err)
+		t.Fail()
 	}
 
 }
 
 func Test_validateFullname(t *testing.T) {
-	expected_err := errors.New("Fullname is less than 3 characters")
+	expected_err := "Fullname is less than 3 characters"
 	names_too_short := []string{"", "a", "bb"}
 
 	for _, name := range names_too_short {
 		err := validateFullname(name)
-		if err != expected_err {
+		if err.Error() != expected_err {
 			t.Logf("Expected: %s\nGot: %s\n", expected_err, err)
+			t.Fail()
 		}
 	}
 
-	expected_err = errors.New("Fullname is greater than 128 characters")
+	expected_err = "Fullname is greater than 128 characters"
 	name_too_long := strings.Repeat("#", 129)
 	err := validateFullname(name_too_long)
-	if err != expected_err {
+	if err.Error() != expected_err {
 		t.Logf("Expected: %s\nGot: %s\n", expected_err, err)
+		t.Fail()
 	}
 }
 
 func Test_validateUsername(t *testing.T) {
-	expected_err := errors.New("Username does not begin with a roman alphabetic character")
+	expected_err := "Username does not begin with a roman alphabetic character"
 	first_char_non_alpha := []string{"1abcdefghijk", "0asdasdadad", "9asdadasaffafa"}
 	for _, val := range first_char_non_alpha {
 		err := validateUsername(val)
-		if err != expected_err {
+		if err.Error() != expected_err {
 			t.Logf("Expected: %s\nGot: %s\n", expected_err, err)
+			t.Fail()
 		}
 	}
 
-	expected_err = errors.New("Username is not alphanumeric")
+	expected_err = "Username is not alphanumeric"
 	non_alphanumeric := []string{
 		"asdasdaasd@@", "sadad...adsads", "asdada////", "sadad'adsaad", "ewaew]asdada", "lllll[sadada", "asaæææææassas",
 		"aϨϨϨϨϨasdaasd", "asdad日本語sdada", "asda⌘⌘⌘sadsa", "aaaa嗨嗨嗨嗨嗨", "sdadCześć", "AAAAAAaść",
 	}
 	for _, val := range non_alphanumeric {
 		err := validateUsername(val)
-		if err != expected_err {
+		if err.Error() != expected_err {
 			t.Logf("Failed for %s\nExpected: %s\nGot: %s\n", val, expected_err, err)
+			t.Fail()
 		}
 	}
 
-	expected_err = errors.New("Username is less than 8 characters")
+	expected_err = "Username is less than 8 characters"
 	too_short := []string{"", "a", "aa", "aaa", "aaaa", "aaaaa", "aaaaaa", "aaaaaaa"}
 	for _, val := range too_short {
 		err := validateUsername(val)
-		if err != expected_err {
+		if err.Error() != expected_err {
 			t.Logf("Failed for %s\nExpected: %s\nGot: %s\n", val, expected_err, err)
+			t.Fail()
 		}
 	}
 
-	expected_err = errors.New("Username is greater than 64 characters")
+	expected_err = "Username is greater than 64 characters"
 	name_too_long := strings.Repeat("a", 65)
 	err := validateUsername(name_too_long)
-	if err != expected_err {
+	if err.Error() != expected_err {
 		t.Logf("Expected: %s\nGot: %s\n", expected_err, err)
+		t.Fail()
 	}
 
 	valid_usernames := []string{"bobman2000", "BOBman9000", "llll22222", "L33tBoaaa", "Joseph1111", "l34444444", "adadasdadadadasasfasfasff"}
 	for _, val := range valid_usernames {
 		if err := validateUsername(val); err != nil {
 			t.Logf("Expected: nil\nGot: %s\n", err)
+			t.Fail()
 		}
 	}
 }
 
 func Test_validateEmail(t *testing.T) {
-	expected_err := errors.New("Invalid email format")
-	invalid_emails := []string{"&&&&adad@gmail.com", "@@@", "ayyyy", "", "()()", "^^david@broseph.com", "%%ttt@gmail.com", "%%@gmsssss.com", "word@land"}
+	expected_err := "Invalid email format"
+	invalid_emails := []string{"&&&&adad@gmailcom", "@@@", "ayyyy", "", "()()", "^^broseph.com", "%%ttt@gmailom", "%%sssss.com", "word@land"}
 
 	for _, invalid_email := range invalid_emails {
 		err := validateEmail(invalid_email)
 
-		if err != expected_err {
+		if err.Error() != expected_err {
 			t.Logf("Failed input: %s\n Expected: %s\nGot %s\n", invalid_email, expected_err, err)
+			t.Fail()
 		}
-	}
-
-	expected_err = errors.New("Invalid email host")
-	domain_that_does_not_exist := "dogbert@definitelynottakenihopeuuuuuu.com"
-	err := validateEmail(domain_that_does_not_exist)
-	if err != expected_err {
-		t.Logf("Expected %s\nGot %s\n", expected_err, err)
 	}
 
 	should_pass := []string{"username@gmail.com", "username@hotmail.com", "username@protonmail.com", "username@protonmail.ch"}
 	for _, email := range should_pass {
-		err = validateEmail(email)
+		err := validateEmail(email)
 		if err != nil {
 			t.Logf("Case %s failed to validate", email)
+			t.Fail()
 		}
 	}
 }

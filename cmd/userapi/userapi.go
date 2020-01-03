@@ -22,10 +22,13 @@ func main() {
 
 	appListenPortPtr := flag.String("listen_port", "8080", "Port which service listens on")
 	appDataTTLSeconds := flag.Int("data_ttl", 60, "time before data expires")
+	appDataPersistPath := flag.String("persist_path", "/opt/userapidata/", "path to directory to save data")
 
 	flag.Parse()
 
-	user_db, err := redisutil.NewRedisHashConn((*redisAddrPtr)+":"+(*redisPortPtr), *redisPassPtr, *redisDBIndexPtr, *redisMaxRetries, *appDataTTLSeconds)
+	user_db, err := redisutil.NewRedisHashConn(
+		(*redisAddrPtr)+":"+(*redisPortPtr), *redisPassPtr, *redisDBIndexPtr, *redisMaxRetries, *appDataTTLSeconds, *appDataPersistPath,
+	)
 	if err != nil {
 		log.Panicf("Exit: %s", err)
 	}

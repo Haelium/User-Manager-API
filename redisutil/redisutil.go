@@ -9,13 +9,15 @@ import (
 )
 
 type RedisHashConn struct {
-	client   *redis.Client
-	locker   *redislock.Client
-	data_ttl int
+	client              *redis.Client
+	locker              *redislock.Client
+	data_ttl            int
+	timeout_threshold   int
+	persisting_filepath string
 }
 
 // TODO: return err
-func NewRedisHashConn(address string, password string, database int, maxretries int, data_ttl int) (RedisHashConn, error) {
+func NewRedisHashConn(address string, password string, database int, maxretries int, data_ttl int, persisting_filepath string) (RedisHashConn, error) {
 	var new_redis_conn RedisHashConn
 
 	new_client := redis.NewClient(&redis.Options{
@@ -36,6 +38,7 @@ func NewRedisHashConn(address string, password string, database int, maxretries 
 
 	new_redis_conn.locker = redislock.New(new_client)
 	new_redis_conn.data_ttl = data_ttl
+	new_redis_conn.persisting_filepath = persisting_filepath
 
 	return new_redis_conn, nil
 }
@@ -47,8 +50,15 @@ func (db RedisHashConn) GetUser(username string) (string, error) {
 }
 
 func (db RedisHashConn) CreateUser(username string, user_json_string string) error {
+
+	lock, _ := db.locker.Obtain(username, 300*time.Second, nil)
+	defer lock.Release()
+	// Critical path here, set user, and timestamp of modification
 	err := db.client.HSet("users", username, user_json_string).Err()
-	go db.expire(username)
+	time_of_modification_string := strconv.FormatInt(time.Now().UnixNano(), 10)
+	db.client.HSet("modified_user_time", username, time_of_modification_string)
+
+	go db.expire(username, time_of_modification_string)
 
 	return err
 }
@@ -62,17 +72,17 @@ func (db RedisHashConn) DeleteUser(user string) error {
 	return err
 }
 
-func (db RedisHashConn) expire(username string) {
-	time_of_modification := time.Now().UnixNano()
-	time_of_modification_string := strconv.FormatInt(time_of_modification, 10)
+func (db RedisHashConn) expire(username string, time_of_modification_string string) {
 
-	db.client.HSet("modified_user_time", username, time_of_modification_string)
+	time.Sleep(time.Duration(db.data_ttl) * time.Millisecond)
 
-	time.Sleep(time.Duration(db.data_ttl))
+	lock, _ := db.locker.Obtain(username, 300*time.Second, nil)
+	defer lock.Release()
 
 	value, _ := db.client.HGet("modified_user_time", username).Result()
 
 	if value == time_of_modification_string {
 		db.client.HDel("modified_user_time", username)
+		db.DeleteUser(username)
 	}
 }
