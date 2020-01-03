@@ -21,7 +21,7 @@ func main() {
 	redisMaxRetries := flag.Int("redis_max_retries", 5, "Number of times redis will retry a command")
 
 	appListenPortPtr := flag.String("listen_port", "8080", "Port which service listens on")
-	appDataTTLSeconds := flag.Int("data_ttl", 60, "time before data expires")
+	appDataTTLSeconds := flag.Int("data_ttl", 60, "time before data expires (seconds)")
 	appDataPersistPath := flag.String("persist_path", "/opt/userapidata/", "path to directory to save data")
 
 	flag.Parse()

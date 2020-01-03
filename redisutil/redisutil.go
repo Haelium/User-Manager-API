@@ -75,7 +75,7 @@ func (db RedisHashConn) DeleteUser(user string) error {
 
 func (db RedisHashConn) expire(username string, time_of_modification_string string) {
 
-	time.Sleep(time.Duration(db.data_ttl) * time.Millisecond)
+	time.Sleep(time.Duration(db.data_ttl) * time.Second)
 
 	lock, _ := db.locker.Obtain(username, 300*time.Second, nil)
 	defer lock.Release()

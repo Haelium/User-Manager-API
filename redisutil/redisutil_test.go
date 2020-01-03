@@ -84,13 +84,22 @@ func Test_expire(t *testing.T) {
 	}
 	defer miniredis_socket.Close()
 
-	redis_client, _ := NewRedisHashConn(miniredis_socket.Addr(), "", 0, 5, 10, ".")
+	redis_client, _ := NewRedisHashConn(miniredis_socket.Addr(), "", 0, 5, 5, ".")
 	redis_client.CreateUser("bob_should_expire", "junk data")
-	time.Sleep(20 * time.Millisecond)
+	time.Sleep(7 * time.Second)
 
 	returned_value, err := redis_client.GetUser("bob_should_expire")
 	if returned_value != "" {
 		t.Logf("Data is not being expired: %s", returned_value)
+		t.Fail()
+	}
+
+	redis_client.CreateUser("bob_should_not_expire", "data_still_there")
+	time.Sleep(4 * time.Second)
+
+	returned_value, err = redis_client.GetUser("bob_should_not_expire")
+	if returned_value != "data_still_there" {
+		t.Logf("Data is expired too early: %s", returned_value)
 		t.Fail()
 	}
 
