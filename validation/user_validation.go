@@ -24,6 +24,59 @@ type user struct {
 	Address  address `json:"address"`
 }
 
+func ModifyUser(old_user_json string, new_parameters_json string) (string, error) {
+	var old_user user
+	var new_user user
+	var changed_fields user
+	var nil_address address
+
+	err := json.Unmarshal([]byte(new_parameters_json), &old_user)
+	if err != nil {
+		return "", err
+	}
+	err = json.Unmarshal([]byte(new_parameters_json), &changed_fields)
+	if err != nil {
+		return "", err
+	}
+
+	new_user = old_user
+
+	if changed_fields.Username != "" && changed_fields.Username != old_user.Username {
+		return "", errors.New("Username changed (cannot be changed)")
+	}
+
+	if changed_fields.FullName != "" {
+		err = validateFullname(changed_fields.FullName)
+		if err != nil {
+			return "", err
+		} else {
+			new_user.FullName = changed_fields.FullName
+		}
+	}
+
+	if changed_fields.Email != "" {
+		err = validateEmail(changed_fields.Email)
+		if err != nil {
+			return "", err
+		} else {
+			new_user.Email = changed_fields.Email
+		}
+	}
+
+	if changed_fields.Address != nil_address {
+		err = validateAddress(changed_fields.Address)
+		if err != nil {
+			return "", err
+		} else {
+			new_user.Address = changed_fields.Address
+		}
+	}
+
+	new_user_json_bytes, err := json.Marshal(new_user)
+
+	return string(new_user_json_bytes), nil
+}
+
 // Email validation does not allow internationalised email domains
 func validateEmail(input string) error {
 	if !isValidEmail.MatchString(input) {

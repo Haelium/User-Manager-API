@@ -50,8 +50,22 @@ func (db RedisHashConn) GetUser(username string) (string, error) {
 	return value, err
 }
 
+// Should rename to SetUser
 func (db RedisHashConn) CreateUser(username string, user_json_string string) error {
 
+	lock, _ := db.locker.Obtain(username, 300*time.Second, nil)
+	defer lock.Release()
+	// Critical path here, set user, and timestamp of modification
+	err := db.client.HSet("users", username, user_json_string).Err()
+	time_of_modification_string := strconv.FormatInt(time.Now().UnixNano(), 10)
+	db.client.HSet("modified_user_time", username, time_of_modification_string)
+
+	go db.expire(username, time_of_modification_string)
+
+	return err
+}
+
+func (db RedisHashConn) EditUser(username string, user_json_string string) error {
 	lock, _ := db.locker.Obtain(username, 300*time.Second, nil)
 	defer lock.Release()
 	// Critical path here, set user, and timestamp of modification

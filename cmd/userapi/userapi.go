@@ -38,8 +38,14 @@ func main() {
 	router := mux.NewRouter()
 
 	router.HandleFunc("/user", handler.CreateUser).Methods(http.MethodPost)
+	router.HandleFunc("/user/", handler.CreateUser).Methods(http.MethodPost)
 	router.HandleFunc("/user/{username}", handler.GetUser).Methods(http.MethodGet)
+	router.HandleFunc("/user/{username}/", handler.GetUser).Methods(http.MethodGet)
 	router.HandleFunc("/user/{username}", handler.DeleteUser).Methods(http.MethodDelete)
+	router.HandleFunc("/user/{username}/", handler.DeleteUser).Methods(http.MethodDelete)
+	router.HandleFunc("/user/{username}", handler.EditUser).Methods(http.MethodPut)
+	router.HandleFunc("/user/{username}/", handler.EditUser).Methods(http.MethodPut)
+
 	//	router.PathPrefix("/").Handler(catchAllHandler)
 
 	log.Fatal(http.ListenAndServe(":"+(*appListenPortPtr), router))

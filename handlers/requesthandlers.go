@@ -40,7 +40,7 @@ PUT /user/{username}				- Updates user				- Takes json struct
 
 type DatabaseInterface interface {
 	CreateUser(string, string) error
-	// EditUser
+	EditUser(string, string) error
 	GetUser(string) (string, error)
 	DeleteUser(string) error
 }
@@ -65,6 +65,52 @@ func responseErrorBadRequest(w http.ResponseWriter, err error) {
 	return
 }
 
+func responseErrorNotFound(w http.ResponseWriter, err error) {
+	w.WriteHeader(http.StatusNotFound)
+	w.Header().Set("Content-Type", "application/json")
+	w.Write([]byte(fmt.Sprintf("{\"error\": \"%s\"}", err)))
+	return
+}
+
+func responseErrorForbidden(w http.ResponseWriter, err error) {
+	w.WriteHeader(http.StatusForbidden)
+	w.Header().Set("Content-Type", "application/json")
+	w.Write([]byte(fmt.Sprintf("{\"error\": \"%s\"}", err)))
+	return
+}
+
+func (handler RequestHandler) EditUser(w http.ResponseWriter, r *http.Request) {
+	pathParams := mux.Vars(r)
+	username := pathParams["username"]
+	user_json_string, err := handler.db.GetUser(username)
+	if err != nil {
+		responseErrorNotFound(w, err)
+	}
+
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		responseErrorBadRequest(w, err)
+		return
+	}
+
+	new_user_body_json, err := validation.ModifyUser(user_json_string, string(body))
+	if err != nil {
+		responseErrorBadRequest(w, err)
+		return
+	}
+
+	// Createuser can be reused here
+	err = handler.db.CreateUser(username, string(new_user_body_json))
+	if err != nil {
+		responseErrorBadRequest(w, err)
+		return
+	}
+
+	w.WriteHeader(http.StatusCreated)
+	w.Header().Set("Content-Type", "application/json")
+	w.Write([]byte("Created user"))
+}
+
 func (handler RequestHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -78,11 +124,9 @@ func (handler RequestHandler) CreateUser(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	// if username exists
-	// responseErrorForbidden
 	existing_user, _ := handler.db.GetUser(username)
 	if existing_user != "" {
-		responseErrorBadRequest(w, errors.New("User already exists"))
+		responseErrorForbidden(w, errors.New("User already exists"))
 		return
 	}
 
