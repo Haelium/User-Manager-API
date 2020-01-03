@@ -1,6 +1,7 @@
 package redisutil
 
 import (
+	"os"
 	"strconv"
 	"time"
 
@@ -82,7 +83,13 @@ func (db RedisHashConn) expire(username string, time_of_modification_string stri
 	value, _ := db.client.HGet("modified_user_time", username).Result()
 
 	if value == time_of_modification_string {
+		user_data, _ := db.GetUser(username)
 		db.client.HDel("modified_user_time", username)
 		db.DeleteUser(username)
+
+		// Todo: logging
+		file, _ := os.Create(db.persisting_filepath + "/" + username + "-" + time_of_modification_string + ".json")
+		file.WriteString(user_data)
+		file.Close()
 	}
 }
