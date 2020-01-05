@@ -170,5 +170,5 @@ var isValidEmail regexp.Regexp
 
 func init() {
 	isAlphaNumeric = *regexp.MustCompile(`^[A-Za-z0-9]+$`)
-	isValidEmail = *regexp.MustCompile(`^.*@.*\..*$`)
+	isValidEmail = *regexp.MustCompile(`^[a-zA-Z0-9\-\.]+@[a-zA-Z0-9\-\.]+\.[a-zA-Z0-9\-\.]+$`)
 }
