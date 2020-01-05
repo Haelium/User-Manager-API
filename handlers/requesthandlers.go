@@ -39,8 +39,7 @@ PUT /user/{username}				- Updates user				- Takes json struct
 */
 
 type DatabaseInterface interface {
-	CreateUser(string, string) error
-	EditUser(string, string) error
+	SetUser(string, string) error
 	GetUser(string) (string, error)
 	DeleteUser(string) error
 }
@@ -99,8 +98,7 @@ func (handler RequestHandler) EditUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Createuser can be reused here
-	err = handler.db.CreateUser(username, string(new_user_body_json))
+	err = handler.db.SetUser(username, string(new_user_body_json))
 	if err != nil {
 		responseErrorBadRequest(w, err)
 		return
@@ -130,7 +128,7 @@ func (handler RequestHandler) CreateUser(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	err = handler.db.CreateUser(username, string(body))
+	err = handler.db.SetUser(username, string(body))
 	if err != nil {
 		responseErrorBadRequest(w, err)
 		return

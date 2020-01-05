@@ -30,7 +30,7 @@ func main() {
 		(*redisAddrPtr)+":"+(*redisPortPtr), *redisPassPtr, *redisDBIndexPtr, *redisMaxRetries, *appDataTTLSeconds, *appDataPersistPath,
 	)
 	if err != nil {
-		log.Panicf("Exit: %s", err)
+		log.Panicf("Exit: %s\nError connecting to redis", err)
 	}
 
 	handler := handlers.NewHandler(user_db)

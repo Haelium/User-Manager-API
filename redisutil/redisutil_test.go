@@ -43,7 +43,7 @@ func Test_GetUser(t *testing.T) {
 	}
 }
 
-func Test_CreateUser(t *testing.T) {
+func Test_SetUser(t *testing.T) {
 	// Set up minikube for testing, fail if not working
 	miniredis_socket, err := miniredis.Run()
 	if err != nil {
@@ -54,7 +54,7 @@ func Test_CreateUser(t *testing.T) {
 	redis_client, _ := NewRedisHashConn(miniredis_socket.Addr(), "", 0, 5, 32, ".")
 
 	for username, userdata := range valid_users {
-		redis_client.CreateUser(username, userdata)
+		redis_client.SetUser(username, userdata)
 	}
 
 	for key, expected_val := range valid_users {
@@ -80,7 +80,7 @@ func Test_expire(t *testing.T) {
 	defer miniredis_socket.Close()
 
 	redis_client, _ := NewRedisHashConn(miniredis_socket.Addr(), "", 0, 5, 5, ".")
-	redis_client.CreateUser("bob_should_expire", "junk data")
+	redis_client.SetUser("bob_should_expire", "junk data")
 	time.Sleep(7 * time.Second)
 
 	returned_value, err := redis_client.GetUser("bob_should_expire")
@@ -89,7 +89,7 @@ func Test_expire(t *testing.T) {
 		t.Fail()
 	}
 
-	redis_client.CreateUser("bob_should_not_expire", "data_still_there")
+	redis_client.SetUser("bob_should_not_expire", "data_still_there")
 	time.Sleep(4 * time.Second)
 
 	returned_value, err = redis_client.GetUser("bob_should_not_expire")

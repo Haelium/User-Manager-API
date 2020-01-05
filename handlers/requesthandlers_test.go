@@ -23,12 +23,7 @@ func NewUserMap() UserMap {
 	return newUserMap
 }
 
-func (db UserMap) EditUser(username string, user_json_string string) error {
-	db.users[username] = user_json_string
-	return nil
-}
-
-func (db UserMap) CreateUser(username string, user_json_string string) error {
+func (db UserMap) SetUser(username string, user_json_string string) error {
 	db.users[username] = user_json_string
 	return nil
 }
