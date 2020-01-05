@@ -13,11 +13,6 @@ var valid_users = map[string]string{
 	"herpderp": `{"username": "herpderp", "email": "herp@derp.io"}`,
 }
 
-var invalid_users = map[string]string{
-	"missingusername": `{"email": "missing@username.com"}`,
-	"missingemail":    `{"username": "missingemail"}`,
-}
-
 func Test_GetUser(t *testing.T) {
 	// Set up minikube for testing, fail if not working
 	miniredis_socket, err := miniredis.Run()
