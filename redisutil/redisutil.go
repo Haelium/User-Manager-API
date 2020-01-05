@@ -81,6 +81,8 @@ func (db RedisHashConn) expire(username string, time_of_modification_string stri
 
 	value, _ := db.client.HGet("modified_user_time", username).Result()
 
+	// If another operation has modified the data, the value won't match this goroutines time of modification
+	// Data which has been modified will be deleted by another goroutine
 	if value == time_of_modification_string {
 		user_data, _ := db.GetUser(username)
 		db.client.HDel("modified_user_time", username)
