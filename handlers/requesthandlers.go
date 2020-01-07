@@ -81,6 +81,7 @@ func responseErrorForbidden(w http.ResponseWriter, err error) {
 func (handler RequestHandler) EditUser(w http.ResponseWriter, r *http.Request) {
 	pathParams := mux.Vars(r)
 	username := pathParams["username"]
+
 	user_json_string, err := handler.db.GetUser(username)
 	if err != nil {
 		responseErrorNotFound(w, err)
@@ -167,6 +168,6 @@ func (handler RequestHandler) DeleteUser(w http.ResponseWriter, r *http.Request)
 	} else {
 		w.WriteHeader(http.StatusOK)
 		w.Header().Set("Content-Type", "application/json")
-		w.Write([]byte(`{"deleted": "username"}`))
+		w.Write([]byte("{\"deleted\":\"" + username + "\"}"))
 	}
 }
