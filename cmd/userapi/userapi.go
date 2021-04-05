@@ -9,8 +9,8 @@ import (
 
 	"github.com/gorilla/mux"
 
-	"github.com/Haelium/BloomReachTest/handlers"
-	"github.com/Haelium/BloomReachTest/redisutil"
+	"github.com/Haelium/User-Manager-API/handlers"
+	"github.com/Haelium/User-Manager-API/redisutil"
 )
 
 func main() {
