@@ -8,7 +8,7 @@ import (
 
 	"github.com/gorilla/mux"
 
-	"github.com/Haelium/BloomReachTest/validation"
+	"github.com/Haelium/User-Manager-API/validation"
 )
 
 /*
