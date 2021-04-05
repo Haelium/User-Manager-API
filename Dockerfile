@@ -1,7 +1,7 @@
 FROM golang:latest as builder
-ADD . /go/src/github.com/Haelium/BloomReachTest
+ADD . /go/src/github.com/Haelium/User-Manager-API
 RUN go get ./...
-RUN go install github.com/Haelium/BloomReachTest/cmd/userapi
+RUN go install github.com/Haelium/User-Manager-API/cmd/userapi
 
 ENTRYPOINT /go/bin/userapi
 FROM golang:latest
